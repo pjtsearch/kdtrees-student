@@ -53,8 +53,8 @@ checkstyleMain {
 tasks.withType(Checkstyle) {
     exclude 'KdTreeGenerator.java'
     exclude 'KdTreeVisualizer.java'
-    exclude 'NearestNeighborVisualizer'
-    exclude 'RangeSearchVisualizer'
+    exclude 'NearestNeighborVisualizer.java'
+    exclude 'RangeSearchVisualizer.java'
 }
 
 checkstyle {
