@@ -18,48 +18,65 @@
  *  and nearest-neighbor search (find a closest point to a query point).
  ******************************************************************************/
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.StdDraw;
 
 
 public class PointSET {
+	private SET<Point2D> set;
 
 	// construct an empty set of points
 	public PointSET() {
-
+		set = new SET<Point2D>();
 	}
 	// is the set empty? 
 	public boolean isEmpty() {
-		return false;
+		return set.isEmpty();
 	}
 	// number of points in the set 
 	public int size() {
-		return 0;
+		return set.size();
 	}
 
 	// add the point to the set (if it is not already in the set)
 	public void insert(Point2D p) {
-		
+		if (!set.contains(p)) set.add(p);
 	}
 
 	// does the set contain point p? 
 	public boolean contains(Point2D p) {
-		return false;
+		return set.contains(p);
 	}
 
 	// draw all points to standard draw 
 	public void draw() {
-		
+		for (Point2D point : set) {
+			StdDraw.point(point.x(), point.y());
+		}
 	}
 
 	// all points that are inside the rectangle
 	public Iterable<Point2D> range(RectHV rect) {
-		return null;
+		List<Point2D> result = new ArrayList<>();
+		for (Point2D point : set) {
+			if (rect.contains(point)) result.add(point);
+		}
+		return result;
 	}
 
 	// a nearest neighbor in the set to point p; null if the set is empty 
 	public Point2D nearest(Point2D p) {
-		return null;
+		List<Point2D> points = new ArrayList<>();
+		for (Point2D point : set) {
+			points.add(point);
+		}
+		points.sort(p.distanceToOrder());
+		return points.get(0);
 	}
 
 	// unit testing of the methods (optional) 
