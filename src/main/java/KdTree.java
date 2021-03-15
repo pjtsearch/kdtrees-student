@@ -18,6 +18,8 @@
  *  and nearest-neighbor search (find a closest point to a query point).
  ******************************************************************************/
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import edu.princeton.cs.algs4.Point2D;
@@ -127,19 +129,74 @@ public class KdTree {
 	  size++;
   }
 
+  private boolean contains(Point2D finding, Node<Point2D> currentParent) {
+	  if (currentParent == null) return false;
+	  if (currentParent.data.equals(finding)) return true;
+	  switch (currentParent.variant) {
+	  	  case X -> {
+	  		  if (finding.x() < currentParent.data.x()) {
+				  return contains(finding, currentParent.lesserChild);
+			  } else {
+				  return contains(finding, currentParent.greaterChild);
+			  }
+	  	  }
+	  	  case Y -> {
+	  		  if (finding.y() < currentParent.data.y()) {
+				  return contains(finding, currentParent.lesserChild);
+			  } else {
+				  return contains(finding, currentParent.greaterChild);
+			  }
+	  	  }
+	  }
+	  return false;
+  }
+  
   // does the set contain point p? 
   public boolean contains(Point2D p) {
-    return false;
+    return contains(p, root);
   }
 
   // draw all points to standard draw 
   public void draw() {
   
   }
+  
+  public Collection<Point2D> range(RectHV rect, Node<Point2D> currentNode, RectHV currentRect) {
+	ArrayList<Point2D> result = new ArrayList<Point2D>();
+	if (currentNode == null) return new ArrayList<Point2D>();
+	if (rect.contains(currentNode.data)) result.add(currentNode.data);
+	
+//	System.out.println(currentRect);
+//	System.out.println(currentNode.data);
+
+	switch (currentNode.variant) {
+  	  case X -> {
+  		RectHV greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
+  		if (rect.intersects(greaterRect)) {
+	  		result.addAll(range(rect, currentNode.greaterChild, greaterRect));
+  		}
+  		RectHV lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
+  		if (rect.intersects(lesserRect)) {
+	  		result.addAll(range(rect, currentNode.lesserChild, lesserRect));
+  		}
+  	  }
+  	  case Y -> {
+  		RectHV greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
+  		if (rect.intersects(greaterRect)) {
+	  		result.addAll(range(rect, currentNode.greaterChild, greaterRect));
+  		}
+  		RectHV lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
+  		if (rect.intersects(lesserRect)) {
+	  		result.addAll(range(rect, currentNode.lesserChild, lesserRect));
+  		}
+  	  }
+    }
+    return result;
+  }
 
   // all points that are inside the rectangle
   public Iterable<Point2D> range(RectHV rect) {
-    return null;
+    return range(rect, root, new RectHV(0, 0, 1, 1));
   }
 
   // a nearest neighbor in the set to point p; null if the set is empty 
