@@ -24,6 +24,7 @@ import java.util.List;
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 
 public class KdTree {
@@ -156,9 +157,35 @@ public class KdTree {
     return contains(p, root);
   }
 
+  private void draw(Node<Point2D> currentNode, RectHV currentRect) {
+	if (currentNode == null) return;
+	StdDraw.setPenColor(StdDraw.BLACK);
+	StdDraw.setPenRadius(0.03);
+	StdDraw.point(currentNode.data.x(), currentNode.data.y());
+	StdDraw.setPenRadius(0.01);
+
+	RectHV greaterRect = null;
+	RectHV lesserRect = null;
+	switch (currentNode.variant) {
+		case X -> {
+			StdDraw.setPenColor(StdDraw.RED);
+			StdDraw.line(currentNode.data.x(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
+			greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
+			lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
+		}
+		case Y -> {
+			StdDraw.setPenColor(StdDraw.BLUE);
+			StdDraw.line(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentNode.data.y());
+			greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
+			lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
+		}
+  	}
+	draw(currentNode.greaterChild, greaterRect);
+	draw(currentNode.lesserChild, lesserRect);
+  }
   // draw all points to standard draw 
   public void draw() {
-  
+	draw(root, new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
   
   public Collection<Point2D> range(RectHV rect, Node<Point2D> currentNode, RectHV currentRect) {
@@ -246,7 +273,12 @@ public class KdTree {
 
   // unit testing of the methods (optional) 
   public static void main(String[] args) {
-
+	var tree = new KdTree();
+	tree.insert(new Point2D(0.5, 0.5));
+    tree.insert(new Point2D(0.6, 0.3));
+    tree.insert(new Point2D(0.8, 0.9));
+    tree.insert(new Point2D(0.1, 0.04));
+	tree.draw();
   }
   
   public String toString() {
