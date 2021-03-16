@@ -199,9 +199,49 @@ public class KdTree {
     return range(rect, root, new RectHV(0, 0, 1, 1));
   }
 
+  public Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode, RectHV currentRect) {
+	if (currentNode == null) return currentClosest;
+	if (currentNode.data.distanceTo(to) <= currentClosest.distanceTo(to)) currentClosest = currentNode.data;
+	
+//		System.out.println(currentRect);
+//		System.out.println(currentNode.data);
+	RectHV greaterRect = null;
+	RectHV lesserRect = null;
+	switch (currentNode.variant) {
+  	  case X -> {
+  		greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
+  		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
+  	  }
+  	  case Y -> {
+  		greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
+  		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
+  	  }
+    }
+	if (greaterRect.contains(to)) {
+		if (greaterRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
+			currentClosest = nearest(to, currentClosest, currentNode.greaterChild, greaterRect);
+		}
+		if (lesserRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
+			currentClosest = nearest(to, currentClosest, currentNode.lesserChild, lesserRect);
+		}
+	} else {
+		if (greaterRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
+			currentClosest = nearest(to, currentClosest, currentNode.greaterChild, greaterRect);
+		}
+		if (lesserRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
+			currentClosest = nearest(to, currentClosest, currentNode.lesserChild, lesserRect);
+		}
+	}
+	return currentClosest;
+  }
+  
   // a nearest neighbor in the set to point p; null if the set is empty 
   public Point2D nearest(Point2D p) {
-    return null;
+    return nearest(p,
+    		new Point2D(Integer.MAX_VALUE, Integer.MAX_VALUE),
+    		root,
+    		new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)
+		);
   }
 
   // unit testing of the methods (optional) 
