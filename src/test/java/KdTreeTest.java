@@ -59,16 +59,16 @@ public class KdTreeTest {
 
   @Test
   public void testRange() {
-	RectHV rect = new RectHV(0, 0, 0.5, 0.5);
+	RectHV rect = new RectHV(0, 0, 5, 5);
     ArrayList<Point2D> pointsInside = new ArrayList<>();
     pointsInside.add(new Point2D(0, 0));
-    pointsInside.add(new Point2D(0, 0.1));
-    pointsInside.add(new Point2D(0.5, 0.5));
-    pointsInside.add(new Point2D(0, 0.5));
+    pointsInside.add(new Point2D(0, 1));
+    pointsInside.add(new Point2D(5, 5));
+    pointsInside.add(new Point2D(0, 5));
     ArrayList<Point2D> pointsOutside = new ArrayList<>();
-    pointsOutside.add(new Point2D(0.9, 0));
-    pointsOutside.add(new Point2D(0, 0.9));
-    pointsOutside.add(new Point2D(0.8, 0.8));
+    pointsOutside.add(new Point2D(9, 0));
+    pointsOutside.add(new Point2D(0, 9));
+    pointsOutside.add(new Point2D(8, 8));
     
     for (Point2D p : pointsInside) tree.insert(p);
     for (Point2D p : pointsOutside) tree.insert(p);
