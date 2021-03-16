@@ -196,7 +196,7 @@ public class KdTree {
 
   // all points that are inside the rectangle
   public Iterable<Point2D> range(RectHV rect) {
-    return range(rect, root, new RectHV(0, 0, 1, 1));
+    return range(rect, root, new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
 
   public Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode, RectHV currentRect) {
