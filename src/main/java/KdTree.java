@@ -102,25 +102,22 @@ public class KdTree {
 		  root = new Node<Point2D>(NodeVariant.X, inserted);
 		  return;
 	  }
-	  switch (currentParent.variant) {
-	  	  case X -> {
-	  		  if (inserted.x() < currentParent.data.x()) {
-				  if (currentParent.lesserChild == null) currentParent.lesserChild = new Node<Point2D>(NodeVariant.Y, inserted);
-				  else findAndInsert(inserted, currentParent.lesserChild);
-			  } else {
-				  if (currentParent.greaterChild == null) currentParent.greaterChild = new Node<Point2D>(NodeVariant.Y, inserted);
-				  else findAndInsert(inserted, currentParent.greaterChild);
-			  }
-	  	  }
-	  	  case Y -> {
-	  		  if (inserted.y() < currentParent.data.y()) {
-				  if (currentParent.lesserChild == null) currentParent.lesserChild = new Node<Point2D>(NodeVariant.X, inserted);
-				  else findAndInsert(inserted, currentParent.lesserChild);
-			  } else {
-				  if (currentParent.greaterChild == null) currentParent.greaterChild = new Node<Point2D>(NodeVariant.X, inserted);
-				  else findAndInsert(inserted, currentParent.greaterChild);
-			  }
-	  	  }
+	  if (currentParent.variant == NodeVariant.X) {
+		if (inserted.x() < currentParent.data.x()) {
+			if (currentParent.lesserChild == null) currentParent.lesserChild = new Node<Point2D>(NodeVariant.Y, inserted);
+			else findAndInsert(inserted, currentParent.lesserChild);
+		} else {
+			if (currentParent.greaterChild == null) currentParent.greaterChild = new Node<Point2D>(NodeVariant.Y, inserted);
+			else findAndInsert(inserted, currentParent.greaterChild);
+		}
+	  } else if (currentParent.variant == NodeVariant.Y) {
+		if (inserted.y() < currentParent.data.y()) {
+			if (currentParent.lesserChild == null) currentParent.lesserChild = new Node<Point2D>(NodeVariant.X, inserted);
+			else findAndInsert(inserted, currentParent.lesserChild);
+		} else {
+			if (currentParent.greaterChild == null) currentParent.greaterChild = new Node<Point2D>(NodeVariant.X, inserted);
+			else findAndInsert(inserted, currentParent.greaterChild);
+		}
 	  }
   }
 
@@ -133,21 +130,18 @@ public class KdTree {
   private boolean contains(Point2D finding, Node<Point2D> currentParent) {
 	  if (currentParent == null) return false;
 	  if (currentParent.data.equals(finding)) return true;
-	  switch (currentParent.variant) {
-	  	  case X -> {
-	  		  if (finding.x() < currentParent.data.x()) {
-				  return contains(finding, currentParent.lesserChild);
-			  } else {
-				  return contains(finding, currentParent.greaterChild);
-			  }
-	  	  }
-	  	  case Y -> {
-	  		  if (finding.y() < currentParent.data.y()) {
-				  return contains(finding, currentParent.lesserChild);
-			  } else {
-				  return contains(finding, currentParent.greaterChild);
-			  }
-	  	  }
+	  if (currentParent.variant == NodeVariant.X) {
+		if (finding.x() < currentParent.data.x()) {
+			return contains(finding, currentParent.lesserChild);
+		} else {
+			return contains(finding, currentParent.greaterChild);
+		}
+	  } else if (currentParent.variant == NodeVariant.Y) {
+		if (finding.y() < currentParent.data.y()) {
+			return contains(finding, currentParent.lesserChild);
+		} else {
+			return contains(finding, currentParent.greaterChild);
+		}
 	  }
 	  return false;
   }
@@ -166,20 +160,17 @@ public class KdTree {
 
 	RectHV greaterRect = null;
 	RectHV lesserRect = null;
-	switch (currentNode.variant) {
-		case X -> {
+	if (currentNode.variant == NodeVariant.X) {
 			StdDraw.setPenColor(StdDraw.RED);
 			StdDraw.line(currentNode.data.x(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
 			greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
 			lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
-		}
-		case Y -> {
-			StdDraw.setPenColor(StdDraw.BLUE);
-			StdDraw.line(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentNode.data.y());
-			greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
-			lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
-		}
-  	}
+	} else if (currentNode.variant == NodeVariant.Y) {
+		StdDraw.setPenColor(StdDraw.BLUE);
+		StdDraw.line(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentNode.data.y());
+		greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
+		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
+	}
 	draw(currentNode.greaterChild, greaterRect);
 	draw(currentNode.lesserChild, lesserRect);
   }
@@ -188,7 +179,7 @@ public class KdTree {
 	draw(root, new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
   
-  public Collection<Point2D> range(RectHV rect, Node<Point2D> currentNode, RectHV currentRect) {
+  private Collection<Point2D> range(RectHV rect, Node<Point2D> currentNode, RectHV currentRect) {
 	ArrayList<Point2D> result = new ArrayList<Point2D>();
 	if (currentNode == null) return new ArrayList<Point2D>();
 	if (rect.contains(currentNode.data)) result.add(currentNode.data);
@@ -196,18 +187,16 @@ public class KdTree {
 //	System.out.println(currentRect);
 //	System.out.println(currentNode.data);
 
-	switch (currentNode.variant) {
-  	  case X -> {
-  		RectHV greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
-  		if (rect.intersects(greaterRect)) {
-	  		result.addAll(range(rect, currentNode.greaterChild, greaterRect));
-  		}
-  		RectHV lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
-  		if (rect.intersects(lesserRect)) {
-	  		result.addAll(range(rect, currentNode.lesserChild, lesserRect));
-  		}
-  	  }
-  	  case Y -> {
+	if (currentNode.variant == NodeVariant.X) {
+		RectHV greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
+		if (rect.intersects(greaterRect)) {
+			result.addAll(range(rect, currentNode.greaterChild, greaterRect));
+		}
+		RectHV lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
+		if (rect.intersects(lesserRect)) {
+			result.addAll(range(rect, currentNode.lesserChild, lesserRect));
+		}
+	} else if (currentNode.variant == NodeVariant.Y) {
   		RectHV greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
   		if (rect.intersects(greaterRect)) {
 	  		result.addAll(range(rect, currentNode.greaterChild, greaterRect));
@@ -216,7 +205,6 @@ public class KdTree {
   		if (rect.intersects(lesserRect)) {
 	  		result.addAll(range(rect, currentNode.lesserChild, lesserRect));
   		}
-  	  }
     }
     return result;
   }
@@ -226,7 +214,7 @@ public class KdTree {
     return range(rect, root, new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
 
-  public Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode, RectHV currentRect) {
+  private Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode, RectHV currentRect) {
 	if (currentNode == null) return currentClosest;
 	if (currentNode.data.distanceTo(to) <= currentClosest.distanceTo(to)) currentClosest = currentNode.data;
 	
@@ -234,16 +222,13 @@ public class KdTree {
 //		System.out.println(currentNode.data);
 	RectHV greaterRect = null;
 	RectHV lesserRect = null;
-	switch (currentNode.variant) {
-  	  case X -> {
+	if (currentNode.variant == NodeVariant.X) {
   		greaterRect = new RectHV(currentNode.data.x(), currentRect.ymin(), currentRect.xmax(), currentRect.ymax());
   		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentNode.data.x(), currentRect.ymax());
-  	  }
-  	  case Y -> {
-  		greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
-  		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
-  	  }
-    }
+	} else if (currentNode.variant == NodeVariant.Y) {
+		greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
+		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
+	}
 	if (greaterRect.contains(to)) {
 		if (greaterRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
 			currentClosest = nearest(to, currentClosest, currentNode.greaterChild, greaterRect);
@@ -281,9 +266,9 @@ public class KdTree {
 	tree.draw();
   }
   
-  public String toString() {
-	  return root.toString("");
-  }
+//   public String toString() {
+// 	  return root.toString("");
+//   }
 }
 
 
