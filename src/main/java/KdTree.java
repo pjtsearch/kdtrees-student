@@ -262,7 +262,7 @@ public class KdTree {
 	if (p == null) throw new IllegalArgumentException();
 	if (isEmpty()) return null;
     return nearest(p,
-    		new Point2D(Integer.MAX_VALUE, Integer.MAX_VALUE),
+    		root.data,
     		root,
     		new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)
 		);
