@@ -217,8 +217,15 @@ public class KdTree {
   }
 
   private Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode, RectHV currentRect) {
-	if (currentNode == null) return currentClosest;
-	if (currentNode.data.distanceTo(to) <= currentClosest.distanceTo(to)) currentClosest = currentNode.data;
+	Point2D newClosest = currentClosest;
+	if (currentNode == null) return newClosest;
+	// System.out.println("----------");
+	// System.out.println(currentNode.data);
+	// System.out.println(currentNode.data.distanceTo(to));
+	// System.out.println(newClosest);
+	// System.out.println(newClosest.distanceTo(to));
+	// System.out.println("----------");
+	if (currentNode.data.distanceTo(to) <= newClosest.distanceTo(to)) newClosest = currentNode.data;
 	
 //		System.out.println(currentRect);
 //		System.out.println(currentNode.data);
@@ -232,21 +239,22 @@ public class KdTree {
 		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
 	}
 	if (greaterRect.contains(to)) {
-		if (greaterRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
-			currentClosest = nearest(to, currentClosest, currentNode.greaterChild, greaterRect);
+		if (greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+			newClosest = nearest(to, newClosest, currentNode.greaterChild, greaterRect);
 		}
-		if (lesserRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
-			currentClosest = nearest(to, currentClosest, currentNode.lesserChild, lesserRect);
+		if (lesserRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+			newClosest = nearest(to, newClosest, currentNode.lesserChild, lesserRect);
 		}
 	} else {
-		if (greaterRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
-			currentClosest = nearest(to, currentClosest, currentNode.greaterChild, greaterRect);
+		if (lesserRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+			newClosest = nearest(to, newClosest, currentNode.lesserChild, lesserRect);
 		}
-		if (lesserRect.distanceTo(currentClosest) <= to.distanceTo(currentClosest)) {
-			currentClosest = nearest(to, currentClosest, currentNode.lesserChild, lesserRect);
+		// System.out.println(greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest));
+		if (greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+			newClosest = nearest(to, newClosest, currentNode.greaterChild, greaterRect);
 		}
 	}
-	return currentClosest;
+	return newClosest;
   }
   
   // a nearest neighbor in the set to point p; null if the set is empty 
@@ -270,9 +278,9 @@ public class KdTree {
 	tree.draw();
   }
   
-//   public String toString() {
-// 	  return root.toString("");
-//   }
+  public String toString() {
+	  return root.toString("");
+  }
 }
 
 
