@@ -224,7 +224,6 @@ public class KdTree {
 	// System.out.println(currentNode.data.distanceTo(to));
 	// System.out.println(newClosest);
 	// System.out.println(newClosest.distanceTo(to));
-	// System.out.println("----------");
 	if (currentNode.data.distanceTo(to) <= newClosest.distanceTo(to)) newClosest = currentNode.data;
 	
 //		System.out.println(currentRect);
@@ -239,18 +238,18 @@ public class KdTree {
 		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
 	}
 	if (greaterRect.contains(to)) {
-		if (greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+		if (greaterRect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.greaterChild, greaterRect);
 		}
-		if (lesserRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+		if (lesserRect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.lesserChild, lesserRect);
 		}
 	} else {
-		if (lesserRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+		if (lesserRect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.lesserChild, lesserRect);
 		}
 		// System.out.println(greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest));
-		if (greaterRect.distanceSquaredTo(newClosest) <= to.distanceTo(newClosest)) {
+		if (greaterRect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.greaterChild, greaterRect);
 		}
 	}
@@ -264,17 +263,18 @@ public class KdTree {
     return nearest(p,
     		root.data,
     		root,
-    		new RectHV(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)
+    		new RectHV(0, 0, 1, 1)
 		);
   }
 
   // unit testing of the methods (optional) 
   public static void main(String[] args) {
 	var tree = new KdTree();
-	tree.insert(new Point2D(0.5, 0.5));
-    tree.insert(new Point2D(0.6, 0.3));
-    tree.insert(new Point2D(0.8, 0.9));
-    tree.insert(new Point2D(0.1, 0.04));
+	tree.insert(new Point2D(0.7,0.2));
+    tree.insert(new Point2D(0.5,0.4));
+    tree.insert(new Point2D(0.2,0.3));
+    tree.insert(new Point2D(0.4,0.7));
+    tree.insert(new Point2D(0.9,0.6));
 	tree.draw();
   }
   
