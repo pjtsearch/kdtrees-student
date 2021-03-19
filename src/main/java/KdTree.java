@@ -227,7 +227,7 @@ public class KdTree {
 	if (currentNode.data.distanceTo(to) <= newClosest.distanceTo(to)) newClosest = currentNode.data;
 	
 //		System.out.println(currentRect);
-//		System.out.println(currentNode.data);
+		// System.out.println(currentNode.data);
 	RectHV greaterRect = null;
 	RectHV lesserRect = null;
 	if (currentNode.variant == NodeVariant.X) {
@@ -237,7 +237,7 @@ public class KdTree {
 		greaterRect = new RectHV(currentRect.xmin(), currentNode.data.y(), currentRect.xmax(), currentRect.ymax());
 		lesserRect = new RectHV(currentRect.xmin(), currentRect.ymin(), currentRect.xmax(), currentNode.data.y());
 	}
-	if (greaterRect.contains(to)) {
+	if ((currentNode.variant == NodeVariant.X && to.x() > currentNode.data.x()) || (currentNode.variant == NodeVariant.Y && to.y() > currentNode.data.y())) {
 		if (greaterRect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.greaterChild, greaterRect);
 		}
