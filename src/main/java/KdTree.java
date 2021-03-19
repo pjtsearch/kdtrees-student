@@ -36,14 +36,14 @@ public class KdTree {
 	  Y
   }
 	
-  private class Node<T> {
+  private class Node implements Comparable<Point2D> {
 	  private NodeVariant variant;
-	  private T data;
-	  private Node<T> lesserChild;
-	  private Node<T> greaterChild;
+	  private Point2D data;
+	  private Node lesserChild;
+	  private Node greaterChild;
 	  private RectHV rect;
 
-	  public Node(NodeVariant variant, T data, Node<T> lesserChild, Node<T> greaterChild, RectHV rect) {
+	  public Node(NodeVariant variant, Point2D data, Node lesserChild, Node greaterChild, RectHV rect) {
 		this.variant = variant;
 		this.data = data;
 		this.lesserChild = lesserChild;
@@ -51,7 +51,7 @@ public class KdTree {
 		this.rect = rect;
 	  }
 
-	  public Node(NodeVariant variant, T data, RectHV rect) {
+	  public Node(NodeVariant variant, Point2D data, RectHV rect) {
 		this.variant = variant;
 		this.data = data;
 		this.rect = rect;
@@ -74,9 +74,18 @@ public class KdTree {
 		  builder.append("\n");
 		  return builder.toString();
 	  }
+
+	  @Override
+	  public int compareTo(Point2D that) {
+		  if (variant == NodeVariant.X) {
+			  return Double.compare(data.x(), that.x());
+		  } else {
+			  return Double.compare(data.y(), that.y());
+		  }
+	  }
   }
   
-  private Node<Point2D> root;
+  private Node root;
   private int size;
 
   // construct an empty set of points
@@ -103,15 +112,15 @@ public class KdTree {
 	return size;
   }
   
-  private void findAndInsert(Point2D inserted, Node<Point2D> currentParent) {
+  private void findAndInsert(Point2D inserted, Node currentParent) {
 	  if (isEmpty()) {
-		  root = new Node<Point2D>(NodeVariant.X, inserted, maxRect);
+		  root = new Node(NodeVariant.X, inserted, maxRect);
 		  return;
 	  }
 	  if (currentParent.variant == NodeVariant.X) {
 		if (inserted.x() < currentParent.data.x()) {
 			if (currentParent.lesserChild == null)
-				currentParent.lesserChild = new Node<Point2D>(
+				currentParent.lesserChild = new Node(
 						NodeVariant.Y,
 						inserted,
 						new RectHV(currentParent.rect.xmin(), currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax())
@@ -119,7 +128,7 @@ public class KdTree {
 			else findAndInsert(inserted, currentParent.lesserChild);
 		} else {
 			if (currentParent.greaterChild == null)
-				currentParent.greaterChild = new Node<Point2D>(
+				currentParent.greaterChild = new Node(
 						NodeVariant.Y,
 						inserted,
 						new RectHV(currentParent.data.x(), currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax())
@@ -129,7 +138,7 @@ public class KdTree {
 	  } else if (currentParent.variant == NodeVariant.Y) {
 		if (inserted.y() < currentParent.data.y()) {
 			if (currentParent.lesserChild == null)
-				currentParent.lesserChild = new Node<Point2D>(
+				currentParent.lesserChild = new Node(
 						NodeVariant.X,
 						inserted,
 						new RectHV(currentParent.rect.xmin(), currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y())
@@ -137,7 +146,7 @@ public class KdTree {
 			else findAndInsert(inserted, currentParent.lesserChild);
 		} else {
 			if (currentParent.greaterChild == null)
-				currentParent.greaterChild = new Node<Point2D>(
+				currentParent.greaterChild = new Node(
 						NodeVariant.X,
 						inserted,
 						new RectHV(currentParent.rect.xmin(), currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax())
@@ -154,23 +163,14 @@ public class KdTree {
 	  size++;
   }
 
-  private boolean contains(Point2D finding, Node<Point2D> currentParent) {
+  private boolean contains(Point2D finding, Node currentParent) {
 	  if (currentParent == null) return false;
 	  if (currentParent.data.equals(finding)) return true;
-	  if (currentParent.variant == NodeVariant.X) {
-		if (finding.x() < currentParent.data.x()) {
-			return contains(finding, currentParent.lesserChild);
-		} else {
-			return contains(finding, currentParent.greaterChild);
-		}
-	  } else if (currentParent.variant == NodeVariant.Y) {
-		if (finding.y() < currentParent.data.y()) {
-			return contains(finding, currentParent.lesserChild);
-		} else {
-			return contains(finding, currentParent.greaterChild);
-		}
+	  if (currentParent.compareTo(finding) > 0) {
+		return contains(finding, currentParent.lesserChild);
+	  } else {
+	  	return contains(finding, currentParent.greaterChild);
 	  }
-	  return false;
   }
   
   // does the set contain point p? 
@@ -178,7 +178,7 @@ public class KdTree {
     return contains(p, root);
   }
 
-  private void draw(Node<Point2D> currentNode) {
+  private void draw(Node currentNode) {
 	if (currentNode == null) return;
 	StdDraw.setPenColor(StdDraw.BLACK);
 	StdDraw.setPenRadius(0.03);
@@ -200,7 +200,7 @@ public class KdTree {
 	draw(root);
   }
   
-  private Collection<Point2D> range(RectHV rect, Node<Point2D> currentNode) {
+  private Collection<Point2D> range(RectHV rect, Node currentNode) {
 	ArrayList<Point2D> result = new ArrayList<Point2D>();
 	if (currentNode == null) return new ArrayList<Point2D>();
 	if (rect.contains(currentNode.data)) result.add(currentNode.data);
@@ -223,7 +223,7 @@ public class KdTree {
     return range(rect, root);
   }
 
-  private Point2D nearest(Point2D to, Point2D currentClosest, Node<Point2D> currentNode) {
+  private Point2D nearest(Point2D to, Point2D currentClosest, Node currentNode) {
 	Point2D newClosest = currentClosest;
 	if (currentNode == null) return newClosest;
 	// System.out.println("----------");
@@ -235,7 +235,7 @@ public class KdTree {
 	
 //		System.out.println(currentRect);
 		// System.out.println(currentNode.data);
-	if ((currentNode.variant == NodeVariant.X && to.x() > currentNode.data.x()) || (currentNode.variant == NodeVariant.Y && to.y() > currentNode.data.y())) {
+	if (currentNode.compareTo(to) < 0) {
 		if (currentNode.greaterChild != null && currentNode.greaterChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
 			newClosest = nearest(to, newClosest, currentNode.greaterChild);
 		}
