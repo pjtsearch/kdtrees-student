@@ -159,11 +159,13 @@ public class KdTree {
   // add the point to the set (if it is not already in the set)
   public void insert(Point2D p) {
 	  if (contains(p)) return;
+	  if (p == null) throw new IllegalArgumentException();
 	  findAndInsert(p, root);
 	  size++;
   }
 
   private boolean contains(Point2D finding, Node currentParent) {
+	  if (finding == null) throw new IllegalArgumentException();
 	  if (currentParent == null) return false;
 	  if (currentParent.data.equals(finding)) return true;
 	  if (currentParent.compareTo(finding) > 0) {
