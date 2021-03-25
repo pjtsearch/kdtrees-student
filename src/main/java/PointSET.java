@@ -100,10 +100,10 @@ public class PointSET {
      * @return The nearest point in the set to another point
      */
     public Point2D nearest(Point2D p) {
-        if (isEmpty())
-            return null;
         if (p == null)
             throw new IllegalArgumentException();
+        if (isEmpty())
+            return null;
         List<Point2D> points = new ArrayList<>();
         for (Point2D point : set) {
             points.add(point);
