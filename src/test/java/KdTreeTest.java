@@ -192,4 +192,33 @@ public class KdTreeTest {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void nearestNullArg() {
+        tree.nearest(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void insertNullArg() {
+        tree.insert(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rangeNullArg() {
+        tree.range(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void containsNullArg() {
+        tree.contains(null);
+    }
+
+    @Test
+    public void nearestEmpty() {
+        assertNull(tree.nearest(new Point2D(0, 0)));
+    }
+
+    @Test
+    public void containsEmpty() {
+        assertFalse(tree.contains(new Point2D(0, 0)));
+    }
 }

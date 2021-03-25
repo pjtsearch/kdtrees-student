@@ -133,4 +133,34 @@ public class PointSetTest {
         assertEquals(new Point2D(0.9, 0.6), set.nearest(new Point2D(0.79, 0.49)));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void nearestNullArg() {
+        set.nearest(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void insertNullArg() {
+        set.insert(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rangeNullArg() {
+        set.range(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void containsNullArg() {
+        set.contains(null);
+    }
+
+    @Test
+    public void nearestEmpty() {
+        assertNull(set.nearest(new Point2D(0, 0)));
+    }
+
+    @Test
+    public void containsEmpty() {
+        assertFalse(set.contains(new Point2D(0, 0)));
+    }
+
 }
