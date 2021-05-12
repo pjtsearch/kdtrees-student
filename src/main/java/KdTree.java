@@ -113,6 +113,11 @@ public class KdTree {
             builder.append("\n");
             return builder.toString();
         }
+        
+        @Override
+        public String toString() {
+        	return toString("");
+        }
 
         @Override
         public int compareTo(Point2D that) {
@@ -389,6 +394,6 @@ public class KdTree {
      * @return A string representation of the tree
      */
     public String toString() {
-        return root.toString("");
+        return root.toString();
     }
 }
