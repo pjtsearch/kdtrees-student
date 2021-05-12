@@ -161,7 +161,7 @@ public class KdTree {
      * @param inserted The point to be inserted
      * @param currentParent The current node that is being checked for a insertion point
      */
-    private void findAndInsert(Point2D inserted, Node currentParent) {
+    private void insert(Point2D inserted, Node currentParent) {
         if (isEmpty()) {
             root = new Node(NodeVariant.X, inserted, maxRect);
             return;
@@ -176,7 +176,7 @@ public class KdTree {
                             currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax()));
                 else
                 	// Otherwise find a spot in the lesser child
-                    findAndInsert(inserted, currentParent.lesserChild);
+                    insert(inserted, currentParent.lesserChild);
             } else {
             	// Put as greater child if greater x
                 if (currentParent.greaterChild == null)
@@ -185,7 +185,7 @@ public class KdTree {
                             currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
                 else
                 	// Otherwise find a spot in the greater child
-                    findAndInsert(inserted, currentParent.greaterChild);
+                    insert(inserted, currentParent.greaterChild);
             }
         // For y node
         } else if (currentParent.variant == NodeVariant.Y) {
@@ -197,7 +197,7 @@ public class KdTree {
                             currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y()));
                 else
                 	// Otherwise find a spot in the lesser child
-                    findAndInsert(inserted, currentParent.lesserChild);
+                    insert(inserted, currentParent.lesserChild);
             } else {
             	// Put as greater child if greater y
                 if (currentParent.greaterChild == null)
@@ -206,7 +206,7 @@ public class KdTree {
                             currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax()));
                 else
                 	// Otherwise find a spot in the greater child
-                    findAndInsert(inserted, currentParent.greaterChild);
+                    insert(inserted, currentParent.greaterChild);
             }
         }
     }
@@ -220,7 +220,7 @@ public class KdTree {
             return;
         if (p == null)
             throw new IllegalArgumentException();
-        findAndInsert(p, root);
+        insert(p, root);
         size++;
     }
 
