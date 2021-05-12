@@ -298,9 +298,6 @@ public class KdTree {
         if (rect.contains(currentNode.data))
             result.add(currentNode.data);
 
-        // System.out.println(currentRect);
-        // System.out.println(currentNode.data);
-
         // If rectangle intersects greater child, at points in range in greater child
         if (currentNode.greaterChild != null && rect.intersects(currentNode.greaterChild.rect)) {
             result.addAll(range(rect, currentNode.greaterChild));
@@ -334,17 +331,11 @@ public class KdTree {
         Point2D newClosest = currentClosest;
         if (currentNode == null)
             return newClosest;
-        // System.out.println("----------");
-        // System.out.println(currentNode.data);
-        // System.out.println(currentNode.data.distanceTo(to));
-        // System.out.println(newClosest);
-        // System.out.println(newClosest.distanceTo(to));
+
         // If closer than current closest, then make it the new closest
         if (currentNode.data.distanceTo(to) <= newClosest.distanceTo(to))
             newClosest = currentNode.data;
 
-        // System.out.println(currentRect);
-        // System.out.println(currentNode.data);
         if (currentNode.compareTo(to) < 0) {
         	// If greater child rectangle is closer, then get nearest in rectangle
             if (currentNode.greaterChild != null
@@ -362,8 +353,7 @@ public class KdTree {
                     && currentNode.lesserChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
                 newClosest = nearest(to, newClosest, currentNode.lesserChild);
             }
-            // System.out.println(greaterRect.distanceSquaredTo(newClosest) <=
-            // to.distanceTo(newClosest));
+
         	// If lesser child rectangle is closer, then get nearest in rectangle
             if (currentNode.greaterChild != null
                     && currentNode.greaterChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
