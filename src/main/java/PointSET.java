@@ -1,7 +1,7 @@
 
 /******************************************************************************
- *  Name:    J.D. DeVaughn-Brown
- *  NetID:   jddevaug
+ *  Name:    Peter
+ *  NetID:   pjtsearch
  *  Precept: P05
  *
  *  Partner Name:    N/A
