@@ -163,6 +163,35 @@ public class KdTreeTest {
         }
         assertEquals(0, pointsInside.size());
     }
+    
+    @Test
+    public void testRangeEdges() {
+        RectHV rect = new RectHV(0, 0, 5, 5);
+        ArrayList<Point2D> pointsInside = new ArrayList<>();
+        pointsInside.add(new Point2D(0, 0));
+        pointsInside.add(new Point2D(0, 2));        
+        pointsInside.add(new Point2D(0, 5));
+        pointsInside.add(new Point2D(2, 5));
+        pointsInside.add(new Point2D(5, 5));
+        pointsInside.add(new Point2D(5, 2));
+        pointsInside.add(new Point2D(5, 0));
+
+        ArrayList<Point2D> pointsOutside = new ArrayList<>();
+        pointsOutside.add(new Point2D(9, 0));
+        pointsOutside.add(new Point2D(0, 9));
+        pointsOutside.add(new Point2D(8, 8));
+
+        for (Point2D p : pointsInside)
+            tree.insert(p);
+        for (Point2D p : pointsOutside)
+            tree.insert(p);
+
+        for (Point2D p : tree.range(rect)) {
+            assertTrue(pointsInside.remove(p));
+            assertFalse(pointsOutside.remove(p));
+        }
+        assertEquals(0, pointsInside.size());
+    }
 
     @Test
     public void testNearest() {
@@ -173,6 +202,17 @@ public class KdTreeTest {
         tree.insert(new Point2D(0.9, 0.6));
 
         assertEquals(new Point2D(0.9, 0.6), tree.nearest(new Point2D(0.79, 0.49)));
+    }
+    
+    @Test
+    public void testNearestSame() {
+        tree.insert(new Point2D(0.7, 0.2));
+        tree.insert(new Point2D(0.5, 0.4));
+        tree.insert(new Point2D(0.2, 0.3));
+        tree.insert(new Point2D(0.4, 0.7));
+        tree.insert(new Point2D(0.9, 0.6));
+
+        assertEquals(new Point2D(0.9, 0.6), tree.nearest(new Point2D(0.9, 0.6)));
     }
 
     @Test
