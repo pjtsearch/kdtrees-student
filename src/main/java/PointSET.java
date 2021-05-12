@@ -104,10 +104,12 @@ public class PointSET {
             throw new IllegalArgumentException();
         if (isEmpty())
             return null;
+        // Convert to List
         List<Point2D> points = new ArrayList<>();
         for (Point2D point : set) {
             points.add(point);
         }
+        // Sort points by distance to p
         points.sort(p.distanceToOrder());
         return points.get(0);
     }
