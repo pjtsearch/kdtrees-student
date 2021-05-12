@@ -166,32 +166,46 @@ public class KdTree {
             root = new Node(NodeVariant.X, inserted, maxRect);
             return;
         }
+        // For x node
         if (currentParent.variant == NodeVariant.X) {
             if (inserted.x() < currentParent.data.x()) {
+            	// Put as lesser child if lesser x
                 if (currentParent.lesserChild == null)
+                	// Restrict the x max
                     currentParent.lesserChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax()));
                 else
+                	// Otherwise find a spot in the lesser child
                     findAndInsert(inserted, currentParent.lesserChild);
             } else {
+            	// Put as greater child if greater x
                 if (currentParent.greaterChild == null)
+                	// Restrict the x minimum
                     currentParent.greaterChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.data.x(),
                             currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
                 else
+                	// Otherwise find a spot in the greater child
                     findAndInsert(inserted, currentParent.greaterChild);
             }
+        // For y node
         } else if (currentParent.variant == NodeVariant.Y) {
             if (inserted.y() < currentParent.data.y()) {
+            	// Put as lesser child if lesser y
                 if (currentParent.lesserChild == null)
+                	// Restrict the y max
                     currentParent.lesserChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y()));
                 else
+                	// Otherwise find a spot in the lesser child
                     findAndInsert(inserted, currentParent.lesserChild);
             } else {
+            	// Put as greater child if greater y
                 if (currentParent.greaterChild == null)
+                	// Restrict the y minimum
                     currentParent.greaterChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax()));
                 else
+                	// Otherwise find a spot in the greater child
                     findAndInsert(inserted, currentParent.greaterChild);
             }
         }
@@ -248,16 +262,20 @@ public class KdTree {
             return;
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setPenRadius(penPointRadius);
+        // Draw current node
         StdDraw.point(currentNode.data.x(), currentNode.data.y());
         StdDraw.setPenRadius(penLineRadius);
 
         if (currentNode.variant == NodeVariant.X) {
+        	// Draw line on x coordinate inside the node's rectangle
             StdDraw.setPenColor(StdDraw.RED);
             StdDraw.line(currentNode.data.x(), currentNode.rect.ymin(), currentNode.data.x(), currentNode.rect.ymax());
         } else if (currentNode.variant == NodeVariant.Y) {
+        	// Draw line on y coordinate inside the node's rectangle
             StdDraw.setPenColor(StdDraw.BLUE);
             StdDraw.line(currentNode.rect.xmin(), currentNode.data.y(), currentNode.rect.xmax(), currentNode.data.y());
         }
+        // Draw children
         draw(currentNode.greaterChild);
         draw(currentNode.lesserChild);
     }
@@ -283,9 +301,11 @@ public class KdTree {
         // System.out.println(currentRect);
         // System.out.println(currentNode.data);
 
+        // If rectangle intersects greater child, at points in range in greater child
         if (currentNode.greaterChild != null && rect.intersects(currentNode.greaterChild.rect)) {
             result.addAll(range(rect, currentNode.greaterChild));
         }
+        // If rectangle intersects lesser child, at points in range in lesser child
         if (currentNode.lesserChild != null && rect.intersects(currentNode.lesserChild.rect)) {
             result.addAll(range(rect, currentNode.lesserChild));
         }
@@ -319,27 +339,32 @@ public class KdTree {
         // System.out.println(currentNode.data.distanceTo(to));
         // System.out.println(newClosest);
         // System.out.println(newClosest.distanceTo(to));
+        // If closer than current closest, then make it the new closest
         if (currentNode.data.distanceTo(to) <= newClosest.distanceTo(to))
             newClosest = currentNode.data;
 
         // System.out.println(currentRect);
         // System.out.println(currentNode.data);
         if (currentNode.compareTo(to) < 0) {
+        	// If greater child rectangle is closer, then get nearest in rectangle
             if (currentNode.greaterChild != null
                     && currentNode.greaterChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
                 newClosest = nearest(to, newClosest, currentNode.greaterChild);
             }
+        	// If lesser child rectangle is closer, then get nearest in rectangle
             if (currentNode.lesserChild != null
                     && currentNode.lesserChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
                 newClosest = nearest(to, newClosest, currentNode.lesserChild);
             }
         } else {
+        	// If greater child rectangle is closer, then get nearest in rectangle
             if (currentNode.lesserChild != null
                     && currentNode.lesserChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
                 newClosest = nearest(to, newClosest, currentNode.lesserChild);
             }
             // System.out.println(greaterRect.distanceSquaredTo(newClosest) <=
             // to.distanceTo(newClosest));
+        	// If lesser child rectangle is closer, then get nearest in rectangle
             if (currentNode.greaterChild != null
                     && currentNode.greaterChild.rect.distanceTo(to) <= to.distanceTo(newClosest)) {
                 newClosest = nearest(to, newClosest, currentNode.greaterChild);
