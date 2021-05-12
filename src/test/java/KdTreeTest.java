@@ -84,18 +84,16 @@ public class KdTreeTest {
         tree.insert(new Point2D(2, -1));
         assertEquals(7, tree.size());
 
-        assertEquals("""
-                (0.0, 0.0) {
-                    (-1.0, 0.0) {
-                        (-2.0, -1.0)
-                        (-2.0, 2.0)
-                    }
-                    (1.0, 0.0) {
-                        (2.0, -1.0)
-                        (2.0, 2.0)
-                    }
-                }
-                """, tree.toString());
+        assertEquals("(0.0, 0.0) {\n" + 
+        		"    (-1.0, 0.0) {\n" + 
+        		"        (-2.0, -1.0)\n" + 
+        		"        (-2.0, 2.0)\n" + 
+        		"    }\n" + 
+        		"    (1.0, 0.0) {\n" + 
+        		"        (2.0, -1.0)\n" + 
+        		"        (2.0, 2.0)\n" + 
+        		"    }\n" + 
+        		"}\n", tree.toString());
     }
 
     @Test
