@@ -121,10 +121,13 @@ public class KdTree {
 
         @Override
         public int compareTo(Point2D that) {
-            if (variant == NodeVariant.X) {
-                return Double.compare(data.x(), that.x());
-            } else {
-                return Double.compare(data.y(), that.y());
+            switch (variant) {
+	            case X:
+	                return Double.compare(data.x(), that.x());
+	            case Y:
+	                return Double.compare(data.y(), that.y());
+	            default:
+	            	throw new Error("Invalid variant");
             }
         }
     }
@@ -174,23 +177,31 @@ public class KdTree {
         // Inserted is less than parent
         if (currentParent.compareTo(inserted) > 0) {
         	if (currentParent.lesserChild == null)
-        		if (currentParent.variant == NodeVariant.X)
-        			currentParent.lesserChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.rect.xmin(),
-                            currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax()));
-        		else
-        			currentParent.lesserChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
-                            currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y()));
-        	else
+        		switch (currentParent.variant) {
+    				case X:
+	        			currentParent.lesserChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.rect.xmin(),
+	                            currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax()));
+	        			break;
+    				case Y:
+	        			currentParent.lesserChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
+	                            currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y()));
+	        			break;
+        		}
+	        else
         	    insert(inserted, currentParent.lesserChild);
         // Inserted is greater than or equal to parent
         } else {
         	if (currentParent.greaterChild == null)
-        		if (currentParent.variant == NodeVariant.X)
-        			currentParent.greaterChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.data.x(),
-                            currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
-        		else
-        			currentParent.greaterChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
-                            currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax()));
+        		switch (currentParent.variant) {
+        			case X:
+        				currentParent.greaterChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.data.x(),
+                                currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
+        				break;
+        			case Y:
+        				currentParent.greaterChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
+                                currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax()));
+        				break;
+        		}
 	    	else
 	    	    insert(inserted, currentParent.greaterChild);
         }
@@ -251,14 +262,17 @@ public class KdTree {
         StdDraw.point(currentNode.data.x(), currentNode.data.y());
         StdDraw.setPenRadius(penLineRadius);
 
-        if (currentNode.variant == NodeVariant.X) {
-        	// Draw line on x coordinate inside the node's rectangle
-            StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(currentNode.data.x(), currentNode.rect.ymin(), currentNode.data.x(), currentNode.rect.ymax());
-        } else if (currentNode.variant == NodeVariant.Y) {
-        	// Draw line on y coordinate inside the node's rectangle
-            StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.line(currentNode.rect.xmin(), currentNode.data.y(), currentNode.rect.xmax(), currentNode.data.y());
+        switch (currentNode.variant) {
+        	case X:
+	        	// Draw line on x coordinate inside the node's rectangle
+	            StdDraw.setPenColor(StdDraw.RED);
+	            StdDraw.line(currentNode.data.x(), currentNode.rect.ymin(), currentNode.data.x(), currentNode.rect.ymax());
+	            break;
+        	case Y:
+	        	// Draw line on y coordinate inside the node's rectangle
+	            StdDraw.setPenColor(StdDraw.BLUE);
+	            StdDraw.line(currentNode.rect.xmin(), currentNode.data.y(), currentNode.rect.xmax(), currentNode.data.y());
+	            break;
         }
         // Draw children
         draw(currentNode.greaterChild);
