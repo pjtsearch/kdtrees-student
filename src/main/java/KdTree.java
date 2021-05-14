@@ -171,48 +171,28 @@ public class KdTree {
             root = new Node(NodeVariant.X, inserted, maxRect);
             return;
         }
-        // For x node
-        if (currentParent.variant == NodeVariant.X) {
-            if (inserted.x() < currentParent.data.x()) {
-            	// Put as lesser child if lesser x
-                if (currentParent.lesserChild == null)
-                	// Restrict the x max
-                    currentParent.lesserChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.rect.xmin(),
+        // Inserted is less than parent
+        if (currentParent.compareTo(inserted) > 0) {
+        	if (currentParent.lesserChild == null)
+        		if (currentParent.variant == NodeVariant.X)
+        			currentParent.lesserChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.rect.ymin(), currentParent.data.x(), currentParent.rect.ymax()));
-                else
-                	// Otherwise find a spot in the lesser child
-                    insert(inserted, currentParent.lesserChild);
-            } else {
-            	// Put as greater child if greater x
-                if (currentParent.greaterChild == null)
-                	// Restrict the x minimum
-                    currentParent.greaterChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.data.x(),
-                            currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
-                else
-                	// Otherwise find a spot in the greater child
-                    insert(inserted, currentParent.greaterChild);
-            }
-        // For y node
-        } else if (currentParent.variant == NodeVariant.Y) {
-            if (inserted.y() < currentParent.data.y()) {
-            	// Put as lesser child if lesser y
-                if (currentParent.lesserChild == null)
-                	// Restrict the y max
-                    currentParent.lesserChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
+        		else
+        			currentParent.lesserChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.data.y()));
-                else
-                	// Otherwise find a spot in the lesser child
-                    insert(inserted, currentParent.lesserChild);
-            } else {
-            	// Put as greater child if greater y
-                if (currentParent.greaterChild == null)
-                	// Restrict the y minimum
-                    currentParent.greaterChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
+        	else
+        	    insert(inserted, currentParent.lesserChild);
+        // Inserted is greater than or equal to parent
+        } else {
+        	if (currentParent.greaterChild == null)
+        		if (currentParent.variant == NodeVariant.X)
+        			currentParent.greaterChild = new Node(NodeVariant.Y, inserted, new RectHV(currentParent.data.x(),
+                            currentParent.rect.ymin(), currentParent.rect.xmax(), currentParent.rect.ymax()));
+        		else
+        			currentParent.greaterChild = new Node(NodeVariant.X, inserted, new RectHV(currentParent.rect.xmin(),
                             currentParent.data.y(), currentParent.rect.xmax(), currentParent.rect.ymax()));
-                else
-                	// Otherwise find a spot in the greater child
-                    insert(inserted, currentParent.greaterChild);
-            }
+	    	else
+	    	    insert(inserted, currentParent.greaterChild);
         }
     }
 
